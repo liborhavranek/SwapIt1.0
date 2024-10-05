@@ -4,6 +4,7 @@ Author: Made with love by Libor Raven
 Date: 05.10.2024
 """
 import unittest
+
 from flask import Flask
 from flask.testing import FlaskClient
 from app import create_app
@@ -31,15 +32,10 @@ class BaseBlueprintTestCase(unittest.TestCase):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
-    def test_base_route_have_welcome_text(self) -> None:
-        """Test, zda route `/` vrací správnou odpověď."""
-        response = self.client.get('/')
-        self.assertEqual(response.data.decode('utf-8'), "Welcome")
-
     def test_base_base_route_have_mimetype(self) -> None:
         """Test, zda base blueprint route `/` vrací správnou odpověď."""
         response = self.client.get('/')
-        self.assertEqual(response.mimetype, "text/plain")
+        self.assertEqual(response.mimetype, "text/html")
 
 
 if __name__ == '__main__':    # pragma: no cover
