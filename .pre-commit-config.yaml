@@ -7,19 +7,39 @@ repos:
       - id: check-yaml                # Kontrola syntaktické správnosti YAML souborů
       - id: check-added-large-files   # Upozorní na přidání velkých souborů (např. nad 5MB)
       - id: check-merge-conflict      # Upozorní na pozůstatky merge konfliktů
-      - id: name-tests-test           # Zkontroluje, že testovací soubory začínají `test_`
-      - id: check-ast                 # Ověří, zda Python soubor lze správně parsovat
-  - repo: https://github.com/pre-commit/mirrors-pylint
-    rev: v2.12.2
+      - id: check-ast
+  - repo: local
     hooks:
-      - id: pylint                    # Použití pylintu pro kontrolu kódu, ale bez striktního hodnocení
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
         args:
-          - "--disable=C0111"         # Zakáže kontrolu na chybějící docstringy (není tak přísné)
-          - "--max-line-length=100"   # Nastavení maximální délky řádku na 100 znaků
+          - "--max-line-length=120"  # Maximální délka řádku nastavena na 100 znaků
+        files: "\\.(py)$"  # Použije kontrolu na všechny Python soubory
+  - repo: local
+    hooks:
+      - id: mypy
+        name: "Check Typing Annotations with mypy"
+        entry: mypy
+        language: system
+        types: [python]
+        args:
+          - --disallow-untyped-defs  # Zakáže definice funkcí bez typových anotací
+          - --disallow-incomplete-defs  # Zakáže částečné typové anotace
+        files: "\\.(py)$"  # Použije kontrolu na všechny Python soubory
+  - repo: local
+    hooks:
+      - id: coverage-check
+        name: "Run Tests with Coverage"
+        entry: bash -c "cd $(git rev-parse --show-toplevel) && coverage run -m unittest discover -s tests -p 'test_*.py' -v 2>&1"
+        language: system
+        types: [python]
     repos:
       - repo: https://github.com/pre-commit/mirrors-prettier
         rev: v3.0.0
         hooks:
           - id: prettier
             args: ["--check", "--write"]
-            files: "\.(html|css|scss)$"
+            files: "\\.(html|css|scss)$"
